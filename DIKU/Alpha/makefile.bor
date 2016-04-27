@@ -1,0 +1,114 @@
+# DikuMUD makefile 
+.AUTODEPEND
+BCCROOT = $(MAKEDIR)\..
+CC = $(BCCROOT)\bin\bcc32
+LD = $(BCCROOT)\bin\ilink32
+WINZIP = C:\apps\Winzip\wzzip
+
+# Compiler directives for debugging
+!ifdef DEBUG
+DEBUG_CFLAGS = -v -y -Od -r- 
+!else
+DEBUG_CFLAGS = -v- -O2 
+!endif
+INCDIRS = -I$(BCCROOT)\include
+
+# Compiler/linker directives for linking static or dynamic
+!ifdef STATIC
+STATIC_CFLAGS =
+LIBS      = import32.lib cw32.lib ws2_32.lib
+!else
+STATIC_CFLAGS = -tWR
+LIBS      = import32.lib cw32i.lib ws2_32.lib
+!endif
+BCC32STARTUP = c0x32.obj
+
+DEFS= -DWIN32 -DWIN32_LEAN_AND_MEAN -D_NO_VCL  
+OPTIM= $(STATIC_CFLAGS) -tWC -w-pia -w-par -w-aus -w-rch $(DEBUG_CFLAGS) -$(PROCESSOR_LEVEL) 
+CFLAGS= $(OPTIM) $(DEFS)
+LFLAGS = -Tpe -ap -c -Gn $(DEBUG_LFLAGS) 
+
+HEADERS = comm.h db.h handler.h interpreter.h limits.h maildef.h \
+	os.h spells.h structs.h utils.h prototypes.h
+	
+CFILES= comm.c act.comm.c act.informative.c act.movement.c act.obj1.c \
+	act.obj2.c act.offensive.c act.other.c act.social.c act.wizard.c \
+	handler.c db.c interpreter.c utility.c spec_assign.c shop.c \
+	limits.c mobact.c fight.c modify.c weather.c spells1.c spells2.c \
+	spell_parser.c reception.c constants.c spec_procs.c signals.c \
+	board.c mar_fiz_maz.c magic.c changes.c os.c
+
+# .obj versions of above
+OFILES= comm.obj act.comm.obj act.informative.obj act.movement.obj \
+	act.obj1.obj act.obj2.obj act.offensive.obj act.other.obj \
+	act.social.obj act.wizard.obj handler.obj db.obj interpreter.obj \
+	utility.obj spec_assign.obj shop.obj limits.obj mobact.obj \
+	fight.obj modify.obj weather.obj spells1.obj spells2.obj \
+	spell_parser.obj reception.obj constants.obj spec_procs.obj \
+	signals.obj board.obj mar_fiz_maz.obj magic.obj changes.obj \
+	os.obj
+
+OTHERSTUFF= mail.c 
+
+UTILITIES= insert_any.c repairgo.c list.c syntax_checker.c \
+	sign.c update.c delplay.c
+
+# documentation
+DOCS= actions.doc defs.doc license.doc running.doc time.doc combat.doc \
+	do_mail look.doc shops.doc values.doc comm.doc handler.doc macro.doc \
+	skills.doc database.doc interpreter.doc newstruct.doc spell_info.doc \
+	dbsup.doc levels.doc readme spells.doc
+
+# data - zones, help, mobs, objects, rooms, etc.
+DATA= actions help_table news readme tinyworld.wld board.messages info \
+	pcobjs.obj tinyworld.mob tinyworld.zon credits messages players \
+	tinyworld.obj wizlist help motd poses tinyworld.shp
+
+# Files in the standard distribution
+DISTFILES= $(CFILES) $(HEADERS) $(DOCS) $(DATA) $(UTILITIES) \
+	$(OTHERSTUFF) nightrun opstart readme INSTALL_NOTES \
+	makefile makefile.bor makefile.dgm makefile.vc makefile.lcc 
+
+!ifndef RELEASE
+RELEASE=dist
+!endif
+
+TARGETS= dmserver.exe list.exe delplay.exe insert_any.exe repairgo.exe \
+	syntax_checker.exe update.exe sign.exe
+OTARGETS=  list.obj delplay.obj insert_any.obj repairgo.obj syntax_checker.obj \
+	update.obj sign.obj	
+
+all: $(TARGETS)
+
+dmserver.exe : $(OFILES)
+	$(LD) $(LFLAGS) $(BCC32STARTUP) $(OFILES), $<,, $(LIBS) 
+
+list.exe : list.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) list.obj, $<,, $(LIBS) 
+	
+delplay.exe : delplay.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) delplay.obj, $<,, $(LIBS) 
+
+insert_any.exe : insert_any.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) insert_any.obj os.obj, $<,, $(LIBS) 
+
+repairgo.exe : repairgo.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) repairgo.obj, $<,, $(LIBS) 
+
+syntax_checker.exe : syntax_checker.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) syntax_checker.obj os.obj, $<,, $(LIBS) 
+
+update.exe : update.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) update.obj, $<,, $(LIBS) 
+
+sign.exe : sign.obj
+	$(LD) $(LFLAGS) $(BCC32STARTUP) sign.obj os.obj, $<,, $(LIBS) 
+
+clean:
+	-@del *.tds *.map $(OFILES) $(TARGETS) $(OTARGETS) 2>NUL
+
+dist: 
+	$(WINZIP) -pr diku-alfa-$(RELEASE).zip $(DISTFILES) 
+
+.c.obj:
+	$(CC) $(CFLAGS) $(INCDIRS) -c $<

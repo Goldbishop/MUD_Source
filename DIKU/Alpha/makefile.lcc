@@ -1,0 +1,93 @@
+#
+# Whatever you put in for $(CC) must be able to grok ANSI C.
+#
+CC=lcc
+LD=lcclnk
+WINZIP=c:\apps\winzip\wzzip
+OPTIM= -O -g2 
+DEFS = -DWIN32 -DWIN32_LEAN_AND_MEAN
+CFLAGS= $(OPTIM) $(DEFS)
+LFLAGS= -s -subsystem console
+LIBS= ws2_32.lib
+
+HEADERS = comm.h db.h handler.h interpreter.h limits.h maildef.h \
+	os.h spells.h structs.h utils.h prototypes.h
+
+CFILES= comm.c act.comm.c act.informative.c act.movement.c act.obj1.c \
+	act.obj2.c act.offensive.c act.other.c act.social.c act.wizard.c \
+	handler.c db.c interpreter.c utility.c spec_assign.c shop.c \
+	limits.c mobact.c fight.c modify.c weather.c spells1.c spells2.c \
+	spell_parser.c reception.c constants.c spec_procs.c signals.c \
+	board.c mar_fiz_maz.c magic.c changes.c os.c
+
+# .obj versions of above                                                      
+OFILES= comm.obj act.comm.obj act.informative.obj act.movement.obj \
+	act.obj1.obj act.obj2.obj act.offensive.obj act.other.obj \
+	act.social.obj act.wizard.obj handler.obj db.obj interpreter.obj \
+	utility.obj spec_assign.obj shop.obj limits.obj mobact.obj \
+	fight.obj modify.obj weather.obj spells1.obj spells2.obj \
+	spell_parser.obj reception.obj constants.obj spec_procs.obj \
+	signals.obj board.obj mar_fiz_maz.obj magic.obj changes.obj \
+	os.obj                                                                
+                                                                              
+OTHERSTUFF= mail.c                                                            
+                                                                              
+UTILITIES= insert_any.c repairgo.c list.c syntax_checker.c \
+	sign.c update.c delplay.c                                             
+                                                                              
+# documentation                                                               
+DOCS= actions.doc defs.doc license.doc running.doc time.doc combat.doc \
+	do_mail look.doc shops.doc values.doc comm.doc handler.doc macro.doc \
+	skills.doc database.doc interpreter.doc newstruct.doc spell_info.doc \
+	dbsup.doc levels.doc readme spells.doc 
+                                                                              
+# data - zones, help, mobs, objects, rooms, etc.
+DATA= actions help_table news readme tinyworld.wld board.messages info \
+	pcobjs.obj tinyworld.mob tinyworld.zon credits messages players \
+	tinyworld.obj wizlist help motd poses tinyworld.shp
+
+# Files in the standard distribution
+DISTFILES= $(CFILES) $(HEADERS) $(DOCS) $(DATA) $(UTILITIES) \
+	$(OTHERSTUFF) nightrun opstart readme INSTALL_NOTES \
+	makefile makefile.bor makefile.dgm makefile.vc6 makefile.lcc
+
+RELEASE=dist
+
+TARGETS= dmserver.exe list.exe delplay.exe insert_any.exe repairgo.exe \
+        syntax_checker.exe update.exe sign.exe
+OTARGETS=  list.obj delplay.obj insert_any.obj repairgo.obj syntax_checker.obj \
+        update.obj sign.obj
+
+all: $(TARGETS)
+
+dmserver.exe : $(OFILES)
+	$(LD) $(LFLAGS) -o dmserver.exe $(OFILES) $(LIBS)
+
+list.exe : list.obj
+	$(LD) $(LFLAGS) -o list.exe list.obj $(LIBS)
+
+delplay.exe : delplay.obj
+	$(LD) $(LFLAGS) -o delplay.exe delplay.obj $(LIBS)
+
+insert_any.exe : insert_any.obj
+	$(LD) $(LFLAGS) -o insert_any.exe insert_any.obj os.obj $(LIBS)
+
+repairgo.exe : repairgo.obj
+	$(LD) $(LFLAGS) -o repairgo.exe repairgo.obj $(LIBS)
+
+syntax_checker.exe : syntax_checker.obj
+	$(LD) $(LFLAGS) -o syntax_checker.exe syntax_checker.obj os.obj $(LIBS)
+
+update.exe : update.obj
+	$(LD) $(LFLAGS) -o update.exe update.obj $(LIBS)
+
+sign.exe : sign.obj
+	$(LD) $(LFLAGS) -o sign.exe sign.obj os.obj $(LIBS)
+
+clean:
+	del $(OFILES) $(TARGETS) $(OTARGETS) 2>NUL
+
+dist: $(DISTFILES)
+	cd ..
+	$(WINZIP) -pr diku-alfa-$(RELEASE).zip $(DISTFILES) 
+
