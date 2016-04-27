@@ -1,0 +1,211 @@
+#
+# Whatever you put in for $(CC) must be able to grok ANSI C.
+#
+CC = dmc
+WINZIP = C:\apps\Winzip\wzzip
+OPTIM = -o -$(PROCESSOR_LEVEL) 
+DEFS = -DWIN32 -DWIN32_LEAN_AND_MEAN 
+CFLAGS = $(OPTIM) $(DEFS) -w2 -w7
+LIBS = wsock32.lib
+
+HEADERS = comm.h db.h handler.h interpreter.h limits.h maildef.h \
+	os.h spells.h structs.h utils.h prototypes.h
+
+CFILES= comm.c act.comm.c act.informative.c act.movement.c act.obj1.c \
+	act.obj2.c act.offensive.c act.other.c act.social.c act.wizard.c \
+	handler.c db.c interpreter.c utility.c spec_assign.c shop.c \
+	limits.c mobact.c fight.c modify.c weather.c spells1.c spells2.c \
+	spell_parser.c reception.c constants.c spec_procs.c signals.c \
+	board.c mar_fiz_maz.c magic.c changes.c os.c
+
+# .obj versions of above
+OFILES= comm.obj act.comm.obj act.informative.obj act.movement.obj \
+	act.obj1.obj act.obj2.obj act.offensive.obj act.other.obj \
+	act.social.obj act.wizard.obj handler.obj db.obj interpreter.obj \
+	utility.obj spec_assign.obj shop.obj limits.obj mobact.obj \
+	fight.obj modify.obj weather.obj spells1.obj spells2.obj \
+	spell_parser.obj reception.obj constants.obj spec_procs.obj \
+	signals.obj board.obj mar_fiz_maz.obj magic.obj changes.obj \
+	os.obj
+
+OTHERSTUFF= mail.c
+
+UTILITIES= insert_any.c repairgo.c list.c syntax_checker.c \
+	sign.c update.c delplay.c
+
+# documentation
+DOCS= actions.doc defs.doc license.doc running.doc time.doc combat.doc \
+	do_mail look.doc shops.doc values.doc comm.doc handler.doc macro.doc \
+	skills.doc database.doc interpreter.doc newstruct.doc spell_info.doc \
+	dbsup.doc levels.doc readme spells.doc
+
+# data - zones, help, mobs, objects, rooms, etc.
+DATA= actions help_table news readme tinyworld.wld board.messages info \
+	pcobjs.obj tinyworld.mob tinyworld.zon credits messages players \
+	tinyworld.obj wizlist help motd poses tinyworld.shp
+
+# Files in the standard distribution
+DISTFILES= $(CFILES) $(HEADERS) $(DOCS) $(DATA) $(UTILITIES) \
+	$(OTHERSTUFF) nightrun opstart readme INSTALL_NOTES \
+	makefile makefile.bor makefile.dgm makefile.vc6 makefile.lcc
+
+RELEASE=dist
+
+TARGETS= dmserver.exe list.exe delplay.exe insert_any.exe repairgo.exe \
+	syntax_checker.exe update.exe sign.exe                                
+OTARGETS=  list.obj delplay.obj insert_any.obj repairgo.obj syntax_checker.obj \
+	update.obj sign.obj                                                   
+                                                                              
+all: $(TARGETS)
+                                                                              
+dmserver.exe : $(OFILES)
+	$(CC) $(CFLAGS) -odmserver.exe $(OFILES) $(LIBS)
+
+list.exe : list.obj                                                           
+	$(CC) $(CFLAGS) -olist.exe list.obj $(LIBS)
+ 
+delplay.exe : delplay.obj
+	$(CC) $(CFLAGS) -odelplay.exe delplay.obj $(LIBS)
+                                                                              
+insert_any.exe : insert_any.obj 
+	$(CC) $(CFLAGS) -oinsert_any.exe insert_any.obj os.obj $(LIBS)
+                                                                              
+repairgo.exe : repairgo.obj                 
+	$(CC) $(CFLAGS) -orepairgo.exe repairgo.obj $(LIBS)
+                                                                              
+syntax_checker.exe : syntax_checker.obj
+	$(CC) $(CFLAGS) -osyntax_checker.exe syntax_checker.obj os.obj $(LIBS)
+
+update.exe : update.obj                                                       
+	$(CC) $(CFLAGS) -oupdate.exe update.obj $(LIBS)
+                                                                              
+sign.exe : sign.obj                                                           
+	$(CC) $(CFLAGS) -osign.exe sign.obj os.obj $(LIBS)
+                                                                              
+clean:                                                                        
+        -@del *.dep *.map $(OFILES) $(TARGETS) $(OTARGETS) 2>NUL              
+                                                                              
+dist: $(DISTFILES)
+	cd ..
+	$(WINZIP) -pr diku-alfa-$(RELEASE).zip $(DISTFILES) 
+
+comm.obj : $(comm.dep) comm.c	
+	$(CC) $(CFLAGS) -d -c comm.c
+	
+act.comm.obj : $(act.comm.dep) act.comm.c
+	$(CC) $(CFLAGS) -d -c act.comm.c
+	
+act.informative.obj  : $(act.informative.dep ) act.informative.c 
+	$(CC) $(CFLAGS) -d -c act.informative.c 
+	
+act.movement.obj : $(act.movement.dep) act.movement.c
+	$(CC) $(CFLAGS) -d -c act.movement.c
+	
+act.obj1.obj : $(act.obj1.dep) act.obj1.c	
+	$(CC) $(CFLAGS) -d -c act.obj1.c
+	
+act.obj2.obj : $(act.obj2.dep) act.obj2.c	
+	$(CC) $(CFLAGS) -d -c act.obj2.c
+	
+act.offensive.obj : $(act.offensive.dep) act.offensive.c	
+	$(CC) $(CFLAGS) -d -c act.offensive.c
+	
+act.other.obj : $(act.other.dep) act.other.c	
+	$(CC) $(CFLAGS) -d -c act.other.c
+
+act.social.obj : $(act.social.dep) act.social.c	
+	$(CC) $(CFLAGS) -d -c act.social.c
+	
+act.wizard.obj : $(act.wizard.dep) act.wizard.c	
+	$(CC) $(CFLAGS) -d -c act.wizard.c
+	
+handler.obj : $(handler.dep) handler.c	
+	$(CC) $(CFLAGS) -d -c handler.c
+
+db.obj : $(db.dep) db.c	
+	$(CC) $(CFLAGS) -d -c db.c
+
+interpreter.obj : $(interpreter.dep) interpreter.c	
+	$(CC) $(CFLAGS) -d -c interpreter.c
+
+utility.obj : $(utility.dep) utility.c	
+	$(CC) $(CFLAGS) -d -c utility.c
+
+spec_assign.obj : $(spec_assign.dep) spec_assign.c	
+	$(CC) $(CFLAGS) -d -c spec_assign.c
+
+shop.obj : $(shop.dep) shop.c	
+	$(CC) $(CFLAGS) -d -c shop.c
+
+limits.obj : $(limits.dep) limits.c	
+	$(CC) $(CFLAGS) -d -c limits.c
+
+mobact.obj : $(mobact.dep) mobact.c	
+	$(CC) $(CFLAGS) -d -c mobact.c
+
+fight.obj : $(fight.dep) fight.c	
+	$(CC) $(CFLAGS) -d -c fight.c
+
+modify.obj : $(modify.dep) modify.c	
+	$(CC) $(CFLAGS) -d -c modify.c
+
+weather.obj : $(weather.dep) weather.c	
+	$(CC) $(CFLAGS) -d -c weather.c
+
+spells1.obj : $(spells1.dep) spells1.c	
+	$(CC) $(CFLAGS) -d -c spells1.c
+
+spells2.obj : $(spells2.dep) spells2.c	
+	$(CC) $(CFLAGS) -d -c spells2.c
+
+spell_parser.obj : $(spell_parser.dep) spell_parser.c	
+	$(CC) $(CFLAGS) -d -c spell_parser.c
+
+reception.obj : $(reception.dep) reception.c	
+	$(CC) $(CFLAGS) -d -c reception.c
+
+constants.obj : $(constants.dep) constants.c	
+	$(CC) $(CFLAGS) -d -c constants.c
+
+spec_procs.obj : $(spec_procs.dep) spec_procs.c	
+	$(CC) $(CFLAGS) -d -c spec_procs.c
+
+signals.obj : $(signals.dep) signals.c	
+	$(CC) $(CFLAGS) -d -c signals.c
+
+board.obj : $(board.dep) board.c	
+	$(CC) $(CFLAGS) -d -c board.c
+
+mar_fiz_maz.obj : $(mar_fiz_maz.dep) mar_fiz_maz.c	
+	$(CC) $(CFLAGS) -d -c mar_fiz_maz.c
+
+magic.obj : $(magic.dep) magic.c	
+	$(CC) $(CFLAGS) -d -c magic.c
+
+changes.obj : $(changes.dep) changes.c	
+	$(CC) $(CFLAGS) -d -c changes.c
+
+os.obj : $(os.dep) os.c	
+	$(CC) $(CFLAGS) -d -c os.c
+
+insert_any.obj : $(insert_any.dep) insert_any.c	
+	$(CC) $(CFLAGS) -d -c insert_any.c
+
+repairgo.obj : $(repairgo.dep) repairgo.c	
+	$(CC) $(CFLAGS) -d -c repairgo.c
+
+list.obj : $(list.dep) list.c	
+	$(CC) $(CFLAGS) -d -c list.c
+
+syntax_checker.obj : $(syntax_checker.dep) syntax_checker.c	
+	$(CC) $(CFLAGS) -d -c syntax_checker.c
+
+sign.obj : $(sign.dep) sign.c	
+	$(CC) $(CFLAGS) -d -c sign.c
+
+update.obj : $(update.dep) update.c	
+	$(CC) $(CFLAGS) -d -c update.c
+
+delplay.obj : $(delplay.dep) delplay.c	
+	$(CC) $(CFLAGS) -d -c delplay.c
+
