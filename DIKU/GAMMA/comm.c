@@ -34,14 +34,12 @@
 #define OPT_USEC 250000       /* time delay corresponding to 4 passes/sec */
 
 /* externs */
-
 extern struct room_data *world;	  /* In db.c */
 extern int top_of_world;            /* In db.c */
 extern struct time_info_data time_info;  /* In db.c */
 extern char help[];
 
 /* local globals */
-
 struct descriptor_data *descriptor_list, *next_to_process;
 
 int lawful = 0;		/* work like the game regulator */
@@ -51,9 +49,9 @@ int reboot = 0;      /* reboot the game after a shutdown */
 int no_specials = 0; /* Suppress ass. of special routines */
 
 int maxdesc, avail_descs;
-int tics = 0;        /* for extern checkpointing */
 
 int get_from_q(struct txt_q *queue, char *dest);
+
 /* write_to_q is in comm.h for the macro */
 int run_the_game(int port);
 int game_loop(int s);
@@ -71,7 +69,6 @@ void parse_name(struct descriptor_data *desc, char *arg);
 void coma(int s);
 
 /* extern fcnts */
-
 struct char_data *make_char(char *name, struct descriptor_data *desc);
 void boot_db(void);
 void zone_update(void);
@@ -91,10 +88,6 @@ void check_reboot(void);
 /* *********************************************************************
 *  main game loop and related stuff				       *
 ********************************************************************* */
-
-
-
-
 int main(int argc, char **argv)
 {
 	int port;
