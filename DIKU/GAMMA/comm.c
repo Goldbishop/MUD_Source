@@ -42,12 +42,12 @@ extern char help[];
 /* local globals */
 struct descriptor_data *descriptor_list, *next_to_process;
 
-int lawful = 0;		/* work like the game regulator */
 int slow_death = 0;  /* Shut her down, Martha, she's sucking mud */
 int diku_shutdown = 0;    /* clean shutdown */
 int reboot = 0;      /* reboot the game after a shutdown */
 int no_specials = 0; /* Suppress ass. of special routines */
 
+int lawful = 0;		   /* work like the game regulator */
 int maxdesc, avail_descs;
 
 int get_from_q(struct txt_q *queue, char *dest);
